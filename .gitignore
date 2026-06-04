@@ -1,0 +1,19 @@
+# 敏感信息 - 千万不要推
+token.txt
+*.token
+*.key
+.env
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志
+*.log
+
+# 依赖（如果以后加框架用）
+node_modules/
