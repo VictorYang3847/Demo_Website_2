@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>李白诗两首</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Noto Serif SC", "STSong", "SimSun", serif;
+      background:
+        radial-gradient(ellipse at top, #2a3a52 0%, #1a2236 50%, #0f1521 100%);
+      color: #e8e0d0;
+      line-height: 1.8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Subtle moon in the background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 8%;
+      right: 12%;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff8d6 0%, #f0d77a 60%, transparent 70%);
+      box-shadow: 0 0 80px 20px rgba(255, 230, 150, 0.15);
+      opacity: 0.85;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Subtle mountain silhouette at the bottom */
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 220px;
+      background:
+        linear-gradient(to top, rgba(20, 30, 50, 0.9) 0%, transparent 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .title {
+      font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+      font-size: 3rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      color: #f5e9c8;
+      text-shadow: 0 0 20px rgba(245, 233, 200, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #a89c82;
+      letter-spacing: 0.3em;
+      font-weight: 300;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #a89c82, transparent);
+      margin: 24px auto;
+    }
+
+    .poem {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(245, 233, 200, 0.12);
+      border-radius: 4px;
+      padding: 48px 40px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(4px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .poem:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      border-color: rgba(245, 233, 200, 0.25);
+    }
+
+    .poem-title {
+      font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+      font-size: 1.6rem;
+      color: #f5e9c8;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 0.15em;
+    }
+
+    .poem-author {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #a89c82;
+      margin-bottom: 32px;
+      letter-spacing: 0.2em;
+    }
+
+    .poem-content {
+      font-size: 1.4rem;
+      letter-spacing: 0.2em;
+      text-align: center;
+      color: #e8e0d0;
+      line-height: 2.4;
+    }
+
+    .poem-content p {
+      margin-bottom: 8px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #6e6552;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+    }
+
+    @media (max-width: 600px) {
+      .title {
+        font-size: 2.2rem;
+        letter-spacing: 0.3em;
+      }
+      .poem {
+        padding: 36px 24px;
+      }
+      .poem-content {
+        font-size: 1.2rem;
+        letter-spacing: 0.15em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="title">李白诗两首</h1>
+      <div class="divider"></div>
+      <p class="subtitle">唐 · 李白</p>
+    </header>
+
+    <main>
+      <article class="poem">
+        <h2 class="poem-title">静夜思</h2>
+        <p class="poem-author">— 李白 —</p>
+        <div class="poem-content">
+          <p>床前明月光，</p>
+          <p>疑是地上霜。</p>
+          <p>举头望明月，</p>
+          <p>低头思故乡。</p>
+        </div>
+      </article>
+
+      <article class="poem">
+        <h2 class="poem-title">望庐山瀑布</h2>
+        <p class="poem-author">— 李白 —</p>
+        <div class="poem-content">
+          <p>日照香炉生紫烟，</p>
+          <p>遥看瀑布挂前川。</p>
+          <p>飞流直下三千尺，</p>
+          <p>疑是银河落九天。</p>
+        </div>
+      </article>
+    </main>
+
+    <footer>
+      <p>— 部署测试页面 · Github × Cloudflare —</p>
+    </footer>
+  </div>
+</body>
+</html>
