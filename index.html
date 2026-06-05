@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>唐诗百首 · 赏析</title>
+  <title>诗词二百首 · 赏析</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
@@ -14,19 +14,26 @@
 
   <main class="container">
     <header class="header">
-      <h1 class="title">唐诗百首</h1>
+      <h1 class="title">诗词二百首</h1>
       <div class="divider"></div>
-      <p class="subtitle">诗 · 韵 · 千古风流</p>
+      <p class="subtitle">唐诗 · 宋词 · 古韵流芳</p>
     </header>
 
     <section class="filters" aria-label="筛选区域">
+      <!-- 类型筛选：全部 / 唐诗 / 宋词 -->
+      <div class="type-tabs" role="tablist" aria-label="按类型筛选">
+        <button class="type-tab active" data-type="all" role="tab" aria-selected="true">全部</button>
+        <button class="type-tab" data-type="shi" role="tab" aria-selected="false">唐诗</button>
+        <button class="type-tab" data-type="ci" role="tab" aria-selected="false">宋词</button>
+      </div>
+
       <div class="search-row">
         <div class="search-box">
           <span class="search-icon">⌕</span>
           <input
             type="text"
             id="searchInput"
-            placeholder="搜索诗名或作者…"
+            placeholder="搜索诗/词名、词牌名或作者…"
             autocomplete="off"
           />
         </div>
@@ -37,16 +44,16 @@
       </div>
 
       <div class="stats">
-        共 <span id="totalCount">100</span> 首 ·
-        当前显示 <span id="visibleCount">100</span> 首
+        共 <span id="totalCount">200</span> 首 ·
+        当前显示 <span id="visibleCount">200</span> 首
       </div>
     </section>
 
-    <section id="poemList" class="poem-list" aria-label="诗列表"></section>
+    <section id="poemList" class="poem-list" aria-label="诗词列表"></section>
 
     <div id="emptyState" class="empty-state" hidden>
       <p>未找到匹配的诗作</p>
-      <p class="empty-hint">试试别的关键词或更换作者</p>
+      <p class="empty-hint">试试别的关键词或更换筛选条件</p>
     </div>
   </main>
 
@@ -55,6 +62,7 @@
     <div class="modal-backdrop" data-close></div>
     <article class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="modal-close" data-close aria-label="关闭">×</button>
+      <p id="modalCipai" class="modal-cipai" hidden></p>
       <h2 id="modalTitle" class="modal-title"></h2>
       <p id="modalAuthor" class="modal-author"></p>
       <div class="modal-divider"></div>
@@ -63,6 +71,7 @@
   </div>
 
   <script src="poems.js"></script>
+  <script src="songs.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
