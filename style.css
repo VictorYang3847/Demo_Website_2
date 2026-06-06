@@ -313,6 +313,18 @@ body {
   letter-spacing: 0.15em;
 }
 
+.author-link {
+  cursor: pointer;
+  color: #d4a86a;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.author-link:hover {
+  color: #f5e9c8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .card-preview {
   margin-top: 14px;
   font-size: 0.92rem;

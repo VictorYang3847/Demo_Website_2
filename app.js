@@ -172,7 +172,7 @@
           ${nameTag}
         </div>
         <h3 class="card-title">${escapeHtml(p.title)}</h3>
-        <p class="card-author">— ${escapeHtml(p.author)} —</p>
+        <p class="card-author">— <span class="author-link" data-author="${escapeHtml(p.author)}">${escapeHtml(p.author)}</span> —</p>
         <p class="card-preview">${escapeHtml(previewLines)}</p>
         <span class="card-arrow" aria-hidden="true">→</span>
       `;
@@ -253,7 +253,7 @@
   // ---------- 弹窗 ----------
   function openModal(poem) {
     $modalTitle.textContent = poem.title;
-    $modalAuthor.textContent = `— ${poem.author} —`;
+    $modalAuthor.innerHTML = `— <span class="author-link" data-author="${escapeHtml(poem.author)}">${escapeHtml(poem.author)}</span> —`;
 
     const nameTag = poem.type === 'ci' ? poem.cipai : poem.type === 'qu' ? poem.qupai : null;
     if (nameTag) {
@@ -369,6 +369,17 @@
 
     // 诗词卡片点击
     $list.addEventListener('click', e => {
+      // 先检查是否点击了作者链接
+      const authorLink = e.target.closest('.author-link');
+      if (authorLink) {
+        e.stopPropagation();
+        const name = authorLink.dataset.author;
+        const author = (typeof AUTHORS !== 'undefined' && Array.isArray(AUTHORS))
+          ? AUTHORS.find(a => a.name === name)
+          : null;
+        if (author) openAuthorModal(author);
+        return;
+      }
       const card = e.target.closest('.poem-card');
       if (!card) return;
       const poem = ALL.find(p => p.id === Number(card.dataset.id));
@@ -419,6 +430,17 @@
 
     // 关闭弹窗
     document.addEventListener('click', e => {
+      // 弹窗内作者名字点击
+      const authorLink = e.target.closest('.author-link');
+      if (authorLink) {
+        e.stopPropagation();
+        const name = authorLink.dataset.author;
+        const author = (typeof AUTHORS !== 'undefined' && Array.isArray(AUTHORS))
+          ? AUTHORS.find(a => a.name === name)
+          : null;
+        if (author) openAuthorModal(author);
+        return;
+      }
       if (e.target.dataset && e.target.dataset.close !== undefined) {
         if (!$modal.hidden) closeModal();
         if (!$authorModal.hidden) closeAuthorModal();
