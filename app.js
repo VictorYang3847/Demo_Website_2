@@ -333,11 +333,19 @@
   }
 
   function closeModal() {
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
     $modal.hidden = true;
     $modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
+
+  // 暴露到全局供 HTML 内联事件调用（解决 Android WebView 事件绑定不可靠的问题）
+  window._closePoemModal = function (e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    closeModal();
+  };
 
   function openAuthorModal(author) {
     $authorModalTitle.textContent = author.name;
@@ -356,10 +364,19 @@
   }
 
   function closeAuthorModal() {
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
     $authorModal.hidden = true;
     $authorModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
+
+  // 暴露到全局供 HTML 内联事件调用
+  window._closeAuthorModal = function (e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    closeAuthorModal();
+  };
 
   // ---------- 视图切换 ----------
   function switchView(viewName) {
@@ -501,8 +518,9 @@
       window.speechSynthesis.cancel();
     });
 
-    // 关闭弹窗（直接绑定到关闭按钮：capture 阶段 + touchend 兜底，覆盖所有移动端）
-    bindModalCloseHandlers();
+  // 关闭弹窗（内联事件已作为主处理器，此处仅作 backup）
+  // 内联 onclick + ontouchstart 在 HTML 中直接绑定，兼容所有 Android WebView
+  bindModalCloseHandlers();
 
     // 弹窗内作者名字点击（打开作者弹窗）—— 仍走 document 委托，简单可靠
     document.addEventListener('click', e => {
@@ -526,46 +544,28 @@
     });
   }
 
-  // 直接绑定关闭按钮事件 - 解决移动端 click 丢失 / 优先级问题
+  // backup 关闭处理（内联事件为主，此处为 PC 端兜底）
   function bindModalCloseHandlers() {
-    // 所有关闭按钮（两个 modal 共用同一套处理）
     document.querySelectorAll('.modal .modal-close').forEach(btn => {
       if (btn._closeBound) return;
       btn._closeBound = true;
-      const closeHandler = (e) => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        e.stopImmediatePropagation();
-        // 立即停止朗诵
-        if (window.speechSynthesis && window.speechSynthesis.speaking) {
-          window.speechSynthesis.cancel();
-        }
-        // 判断关闭的是哪个 modal
-        const inPoemModal = btn.closest('#modal');
-        const inAuthorModal = btn.closest('#authorModal');
-        if (inPoemModal && !$modal.hidden) closeModal();
-        if (inAuthorModal && !$authorModal.hidden) closeAuthorModal();
-      };
-      // click 事件（capture 阶段，最高优先级，阻止朗诵按钮抢走事件）
-      btn.addEventListener('click', closeHandler, { capture: true });
-      // touchend 兜底（Android WebView 上 click 事件有时被吞）
-      btn.addEventListener('touchend', closeHandler, { capture: true, passive: false });
+        if (!btn.closest('#modal').hidden) closeModal();
+        if (!btn.closest('#authorModal').hidden) closeAuthorModal();
+      });
     });
 
     // 背景遮罩点击关闭
     document.querySelectorAll('.modal-backdrop').forEach(bd => {
       if (bd._closeBound) return;
       bd._closeBound = true;
-      const handler = (e) => {
+      bd.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (window.speechSynthesis && window.speechSynthesis.speaking) {
-          window.speechSynthesis.cancel();
-        }
         if (!$modal.hidden) closeModal();
         if (!$authorModal.hidden) closeAuthorModal();
-      };
-      bd.addEventListener('click', handler, { capture: true });
-      bd.addEventListener('touchend', handler, { capture: true, passive: false });
+      });
     });
   }
 
