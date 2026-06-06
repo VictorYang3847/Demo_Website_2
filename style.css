@@ -398,9 +398,6 @@ body {
 }
 
 .card-arrow {
-  position: absolute;
-  bottom: 16px;
-  right: 20px;
   color: #6e6552;
   font-size: 1.2rem;
   transition: color 0.2s, transform 0.2s;
@@ -409,6 +406,74 @@ body {
 .poem-card:hover .card-arrow {
   color: #f5e9c8;
   transform: translateX(2px);
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.speak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(245, 233, 200, 0.2);
+  border-radius: 50%;
+  background: rgba(245, 233, 200, 0.05);
+  color: #f5e9c8;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.speak-btn:hover {
+  background: rgba(245, 233, 200, 0.15);
+  border-color: rgba(245, 233, 200, 0.4);
+  transform: scale(1.1);
+}
+
+.speak-btn:active {
+  transform: scale(0.95);
+}
+
+/* 弹窗内朗诵按钮 */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 0;
+}
+
+.speak-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: 1px solid rgba(245, 233, 200, 0.3);
+  border-radius: 24px;
+  background: rgba(245, 233, 200, 0.08);
+  color: #f5e9c8;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.speak-btn-modal:hover {
+  background: rgba(245, 233, 200, 0.15);
+  border-color: rgba(245, 233, 200, 0.5);
+}
+
+.speak-btn-modal:active {
+  transform: scale(0.95);
+}
+
+.speak-icon {
+  font-size: 1.1rem;
 }
 
 /* ========== 空状态 ========== */

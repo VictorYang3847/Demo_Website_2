@@ -205,7 +205,10 @@
         <h3 class="card-title">${escapeHtml(p.title)}</h3>
         <p class="card-author">— <span class="author-link" data-author="${escapeHtml(p.author)}">${escapeHtml(p.author)}</span> —</p>
         <p class="card-preview">${escapeHtml(previewLines)}</p>
-        <span class="card-arrow" aria-hidden="true">→</span>
+        <div class="card-footer">
+          <span class="card-arrow" aria-hidden="true">→</span>
+          <button class="speak-btn" data-id="${p.id}" aria-label="朗诵">🔊</button>
+        </div>
       `;
       frag.appendChild(card);
     });
@@ -298,8 +301,14 @@
       .map(line => `<p>${escapeHtml(line)}</p>`)
       .join('');
 
-    // 创作背景
+    // 朗诵按钮
     currentPoemId = poem.id;
+    const $modalSpeakBtn = document.getElementById('modalSpeakBtn');
+    if ($modalSpeakBtn) {
+      $modalSpeakBtn.dataset.id = poem.id;
+    }
+
+    // 创作背景
     let bg = null;
     if (typeof BACKGROUNDS !== 'undefined') {
       bg = BACKGROUNDS[String(poem.id)];
@@ -324,6 +333,7 @@
   }
 
   function closeModal() {
+    window.speechSynthesis.cancel();
     $modal.hidden = true;
     $modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
@@ -409,6 +419,14 @@
 
     // 诗词卡片点击
     $list.addEventListener('click', e => {
+      // 先检查是否点击了朗诵按钮
+      const speakBtn = e.target.closest('.speak-btn');
+      if (speakBtn) {
+        e.stopPropagation();
+        const id = Number(speakBtn.dataset.id);
+        speakPoem(id);
+        return;
+      }
       // 先检查是否点击了作者链接
       const authorLink = e.target.closest('.author-link');
       if (authorLink) {
@@ -468,6 +486,21 @@
       $bgToggle.querySelector('.bg-arrow').textContent = expanded ? '▾' : '▴';
     });
 
+    // 弹窗内朗诵按钮
+    const $modalSpeakBtn = document.getElementById('modalSpeakBtn');
+    if ($modalSpeakBtn) {
+      $modalSpeakBtn.addEventListener('click', () => {
+        const id = Number($modalSpeakBtn.dataset.id);
+        speakPoem(id);
+      });
+    }
+
+    // 关闭弹窗时停止朗诵
+    const origCloseModal = closeModal;
+    $modal.addEventListener('hidden', () => {
+      window.speechSynthesis.cancel();
+    });
+
     // 关闭弹窗
     document.addEventListener('click', e => {
       // 弹窗内作者名字点击
@@ -495,6 +528,25 @@
   }
 
   // ---------- 工具 ----------
+  // 语音朗诵
+  function speakPoem(poemId) {
+    const poem = ALL.find(p => p.id === poemId);
+    if (!poem) return;
+    // 停止当前正在播放的语音
+    window.speechSynthesis.cancel();
+    const text = poem.title + '，' + poem.author + '。' + poem.content.join('');
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.85;  // 稍慢，更适合诗词朗诵
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    // 尝试选择中文语音
+    const voices = window.speechSynthesis.getVoices();
+    const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+    if (zhVoice) utterance.voice = zhVoice;
+    window.speechSynthesis.speak(utterance);
+  }
+
   function getGradeClass(grade) {
     if (!grade) return '';
     if (grade.startsWith('小学')) return 'grade-primary';
