@@ -189,6 +189,29 @@ body {
   color: #e8e0d0;
 }
 
+.grade-filter {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(245, 233, 200, 0.15);
+  border-radius: 4px;
+  color: #e8e0d0;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color 0.2s;
+}
+
+.grade-filter:focus {
+  border-color: rgba(245, 233, 200, 0.4);
+}
+
+.grade-filter option {
+  background: #1a2236;
+  color: #e8e0d0;
+}
+
 .stats {
   margin-top: 16px;
   font-size: 0.9rem;
@@ -243,13 +266,14 @@ body {
   opacity: 1;
 }
 
-/* 卡片头部（徽章 + 词牌/曲牌名） */
+/* 卡片头部（徽章 + 词牌/曲牌名 + 年级标签） */
 .card-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
   min-height: 22px;
+  flex-wrap: wrap;
 }
 
 .type-badge {
@@ -290,6 +314,42 @@ body {
   background: rgba(200, 170, 100, 0.2);
   color: #d0b870;
   border: 1px solid rgba(200, 170, 100, 0.35);
+}
+
+/* 年级标签 */
+.grade-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  margin-left: auto;
+}
+
+.grade-primary {
+  background: rgba(120, 200, 140, 0.15);
+  color: #90d8a0;
+  border: 1px solid rgba(120, 200, 140, 0.3);
+}
+
+.grade-middle {
+  background: rgba(100, 160, 220, 0.15);
+  color: #80b8e8;
+  border: 1px solid rgba(100, 160, 220, 0.3);
+}
+
+.grade-high {
+  background: rgba(200, 120, 120, 0.15);
+  color: #e8a0a0;
+  border: 1px solid rgba(200, 120, 120, 0.3);
+}
+
+.grade-extra {
+  background: rgba(180, 160, 200, 0.15);
+  color: #c8b0d8;
+  border: 1px solid rgba(180, 160, 200, 0.3);
 }
 
 .cipai-tag {

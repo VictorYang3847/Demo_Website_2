@@ -17,6 +17,7 @@
   const $empty = document.getElementById('emptyState');
   const $search = document.getElementById('searchInput');
   const $author = document.getElementById('authorFilter');
+  const $grade = document.getElementById('gradeFilter');
   const $total = document.getElementById('totalCount');
   const $visible = document.getElementById('visibleCount');
   const $typeTabs = document.querySelectorAll('.type-tab');
@@ -85,6 +86,7 @@
 
     ALL = validSources.flat();
     populateAuthorFilter();
+    populateGradeFilter();
     $total.textContent = ALL.length;
     renderPoemList(ALL);
     renderAuthorList();
@@ -123,18 +125,37 @@
     });
   }
 
+  // ---------- 年级下拉框 ----------
+  function populateGradeFilter() {
+    const grades = [
+      '小学一年级', '小学二年级', '小学三年级', '小学四年级', '小学五年级', '小学六年级',
+      '初中七年级', '初中八年级', '初中九年级',
+      '高中一年级', '高中二年级', '高中三年级',
+      '课外拓展'
+    ];
+    grades.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g;
+      opt.textContent = g;
+      $grade.appendChild(opt);
+    });
+  }
+
   // ---------- 诗词过滤 + 渲染 ----------
   function filterPoems() {
     const kw = $search.value.trim().toLowerCase();
     const author = $author.value;
+    const grade = $grade.value;
+    const grades = (typeof GRADES !== 'undefined') ? GRADES : {};
     return ALL.filter(p => {
       const matchType = currentType === 'all' || p.type === currentType;
       const matchAuthor = !author || p.author === author;
+      const matchGrade = !grade || grades[String(p.id)] === grade;
       const matchKw = !kw ||
         p.title.toLowerCase().includes(kw) ||
         p.author.toLowerCase().includes(kw) ||
         (p.cipai || p.qupai || '').toLowerCase().includes(kw);
-      return matchType && matchAuthor && matchKw;
+      return matchType && matchAuthor && matchGrade && matchKw;
     });
   }
 
@@ -147,6 +168,7 @@
     }
     $empty.hidden = true;
     const frag = document.createDocumentFragment();
+    const grades = (typeof GRADES !== 'undefined') ? GRADES : {};
     items.forEach(p => {
       const card = document.createElement('article');
       card.className = 'poem-card';
@@ -166,10 +188,16 @@
 
       const typeBadge = `<span class="type-badge type-${p.type}">${TYPE_LABELS[p.type] || p.type}</span>`;
 
+      const gradeLabel = grades[String(p.id)] || '';
+      const gradeTag = gradeLabel
+        ? `<span class="grade-badge ${getGradeClass(gradeLabel)}">${escapeHtml(gradeLabel)}</span>`
+        : '';
+
       card.innerHTML = `
         <div class="card-header">
           ${typeBadge}
           ${nameTag}
+          ${gradeTag}
         </div>
         <h3 class="card-title">${escapeHtml(p.title)}</h3>
         <p class="card-author">— <span class="author-link" data-author="${escapeHtml(p.author)}">${escapeHtml(p.author)}</span> —</p>
@@ -367,6 +395,9 @@
     // 作者筛选
     $author.addEventListener('change', refreshPoemList);
 
+    // 年级筛选
+    $grade.addEventListener('change', refreshPoemList);
+
     // 诗词卡片点击
     $list.addEventListener('click', e => {
       // 先检查是否点击了作者链接
@@ -455,6 +486,15 @@
   }
 
   // ---------- 工具 ----------
+  function getGradeClass(grade) {
+    if (!grade) return '';
+    if (grade.startsWith('小学')) return 'grade-primary';
+    if (grade.startsWith('初中')) return 'grade-middle';
+    if (grade.startsWith('高中')) return 'grade-high';
+    if (grade === '课外拓展') return 'grade-extra';
+    return '';
+  }
+
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
