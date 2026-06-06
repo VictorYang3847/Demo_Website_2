@@ -45,7 +45,8 @@
     ci: '词',
     qu: '曲',
     qing: '清诗',
-    modern: '现代'
+    modern: '现代',
+    classical: '古文'
   };
 
   // 朝代顺序（用于作者排序）
@@ -62,6 +63,7 @@
       (typeof QU !== 'undefined' && Array.isArray(QU)) ? QU : [],
       (typeof QING !== 'undefined' && Array.isArray(QING)) ? QING : [],
       (typeof MODERN !== 'undefined' && Array.isArray(MODERN)) ? MODERN : [],
+      (typeof classicalTexts !== 'undefined' && Array.isArray(classicalTexts)) ? classicalTexts : [],
     ];
 
     const validSources = sources.filter(s => s.length > 0);
@@ -79,7 +81,8 @@
           else if (idx === 1) p.type = 'ci';
           else if (idx === 2) p.type = 'qu';
           else if (idx === 3) p.type = 'qing';
-          else p.type = 'modern';
+          else if (idx === 4) p.type = 'modern';
+          else if (idx === 5) p.type = 'classical';
         }
       });
     });
@@ -297,7 +300,13 @@
 
     // 创作背景
     currentPoemId = poem.id;
-    const bg = (typeof BACKGROUNDS !== 'undefined') ? BACKGROUNDS[String(poem.id)] : null;
+    let bg = null;
+    if (typeof BACKGROUNDS !== 'undefined') {
+      bg = BACKGROUNDS[String(poem.id)];
+    }
+    if (!bg && typeof CLASSICAL_BACKGROUNDS !== 'undefined') {
+      bg = CLASSICAL_BACKGROUNDS[String(poem.id)];
+    }
     if (bg) {
       $bgToggle.style.display = '';
       $bgContent.textContent = bg;
