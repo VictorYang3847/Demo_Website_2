@@ -19,48 +19,65 @@
       <p class="subtitle">唐诗 · 宋词 · 元曲 · 清代 · 现代</p>
     </header>
 
-    <section class="filters" aria-label="筛选区域">
-      <!-- 类型筛选 -->
-      <div class="type-tabs" role="tablist" aria-label="按类型筛选">
-        <button class="type-tab active" data-type="all" role="tab" aria-selected="true">全部</button>
-        <button class="type-tab" data-type="shi" role="tab" aria-selected="false">唐诗</button>
-        <button class="type-tab" data-type="ci" role="tab" aria-selected="false">宋词</button>
-        <button class="type-tab" data-type="qu" role="tab" aria-selected="false">元曲</button>
-        <button class="type-tab" data-type="qing" role="tab" aria-selected="false">清代</button>
-        <button class="type-tab" data-type="modern" role="tab" aria-selected="false">现代</button>
-      </div>
+    <!-- 顶部导航 -->
+    <nav class="main-nav" aria-label="主导航">
+      <button class="nav-btn active" data-view="poems">📜 诗词</button>
+      <button class="nav-btn" data-view="authors">👤 作者</button>
+    </nav>
 
-      <div class="search-row">
-        <div class="search-box">
-          <span class="search-icon">⌕</span>
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="搜索诗名、词牌、曲牌或作者…"
-            autocomplete="off"
-          />
+    <!-- 诗词视图 -->
+    <section id="poemView" class="view active">
+      <section class="filters" aria-label="筛选区域">
+        <div class="type-tabs" role="tablist" aria-label="按类型筛选">
+          <button class="type-tab active" data-type="all" role="tab" aria-selected="true">全部</button>
+          <button class="type-tab" data-type="shi" role="tab" aria-selected="false">唐诗</button>
+          <button class="type-tab" data-type="ci" role="tab" aria-selected="false">宋词</button>
+          <button class="type-tab" data-type="qu" role="tab" aria-selected="false">元曲</button>
+          <button class="type-tab" data-type="qing" role="tab" aria-selected="false">清代</button>
+          <button class="type-tab" data-type="modern" role="tab" aria-selected="false">现代</button>
         </div>
 
-        <select id="authorFilter" class="author-filter" aria-label="按作者筛选">
-          <option value="">全部作者</option>
-        </select>
-      </div>
+        <div class="search-row">
+          <div class="search-box">
+            <span class="search-icon">⌕</span>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="搜索诗名、词牌、曲牌或作者…"
+              autocomplete="off"
+            />
+          </div>
 
-      <div class="stats">
-        共 <span id="totalCount">300</span> 首 ·
-        当前显示 <span id="visibleCount">300</span> 首
+          <select id="authorFilter" class="author-filter" aria-label="按作者筛选">
+            <option value="">全部作者</option>
+          </select>
+        </div>
+
+        <div class="stats">
+          共 <span id="totalCount">300</span> 首 ·
+          当前显示 <span id="visibleCount">300</span> 首
+        </div>
+      </section>
+
+      <section id="poemList" class="poem-list" aria-label="诗词列表"></section>
+
+      <div id="emptyState" class="empty-state" hidden>
+        <p>未找到匹配的作品</p>
+        <p class="empty-hint">试试别的关键词或更换筛选条件</p>
       </div>
     </section>
 
-    <section id="poemList" class="poem-list" aria-label="诗词列表"></section>
-
-    <div id="emptyState" class="empty-state" hidden>
-      <p>未找到匹配的作品</p>
-      <p class="empty-hint">试试别的关键词或更换筛选条件</p>
-    </div>
+    <!-- 作者视图 -->
+    <section id="authorView" class="view" hidden>
+      <div class="author-intro">
+        <h2 class="section-title">历代诗词作者</h2>
+        <p class="section-desc">共收录 <span id="authorCount">0</span> 位作者，按出生年代排序</p>
+      </div>
+      <div id="authorList" class="author-list"></div>
+    </section>
   </main>
 
-  <!-- 详情弹窗 -->
+  <!-- 诗词详情弹窗 -->
   <div id="modal" class="modal" hidden aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
     <article class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -70,6 +87,29 @@
       <p id="modalAuthor" class="modal-author"></p>
       <div class="modal-divider"></div>
       <div id="modalContent" class="modal-content-text"></div>
+
+      <!-- 创作背景展开区 -->
+      <div class="modal-background">
+        <button id="bgToggle" class="bg-toggle" aria-expanded="false">
+          <span class="bg-icon">📖</span>
+          <span>查看创作背景</span>
+          <span class="bg-arrow">▾</span>
+        </button>
+        <div id="bgContent" class="bg-content" hidden></div>
+      </div>
+    </article>
+  </div>
+
+  <!-- 作者详情弹窗 -->
+  <div id="authorModal" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <article class="modal-content" role="dialog" aria-modal="true" aria-labelledby="authorModalTitle">
+      <button class="modal-close" data-close aria-label="关闭">×</button>
+      <p id="authorModalDynasty" class="modal-cipai"></p>
+      <h2 id="authorModalTitle" class="modal-title"></h2>
+      <p id="authorModalYear" class="modal-author"></p>
+      <div class="modal-divider"></div>
+      <div id="authorModalBio" class="modal-content-text"></div>
     </article>
   </div>
 
@@ -78,6 +118,8 @@
   <script src="qu.js"></script>
   <script src="qing.js"></script>
   <script src="modern.js"></script>
+  <script src="authors.js"></script>
+  <script src="backgrounds.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

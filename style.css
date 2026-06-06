@@ -518,3 +518,254 @@ body {
     right: 6%;
   }
 }
+
+/* ========== 顶部主导航 ========== */
+.main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 233, 200, 0.12);
+  border-radius: 30px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  color: #a89c82;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-btn:hover {
+  color: #f5e9c8;
+  background: rgba(245, 233, 200, 0.05);
+}
+
+.nav-btn.active {
+  color: #1a2236;
+  background: linear-gradient(135deg, #f5e9c8 0%, #e8d8a0 100%);
+  border-color: #f5e9c8;
+  box-shadow: 0 2px 10px rgba(245, 233, 200, 0.2);
+  font-weight: 600;
+}
+
+/* ========== 视图切换 ========== */
+.view[hidden] {
+  display: none;
+}
+
+.author-intro {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+  font-size: 2.2rem;
+  color: #f5e9c8;
+  letter-spacing: 0.3em;
+  margin-bottom: 8px;
+}
+
+.section-desc {
+  font-size: 0.95rem;
+  color: #a89c82;
+  letter-spacing: 0.15em;
+}
+
+.section-desc span {
+  color: #f5e9c8;
+  font-weight: 600;
+  margin: 0 4px;
+}
+
+/* ========== 朝代分组小标题 ========== */
+.dynasty-header {
+  font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+  font-size: 1.3rem;
+  color: #f5e9c8;
+  letter-spacing: 0.3em;
+  margin: 24px 8px 14px;
+  padding-left: 12px;
+  border-left: 3px solid #d4a86a;
+  text-shadow: 0 0 10px rgba(245, 233, 200, 0.15);
+}
+
+.dynasty-header:first-child {
+  margin-top: 0;
+}
+
+/* ========== 作者卡片 ========== */
+.author-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.author-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 233, 200, 0.1);
+  border-radius: 4px;
+  padding: 22px 22px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.author-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, #d4a86a, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.author-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 233, 200, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.author-card:hover::before {
+  opacity: 1;
+}
+
+.author-name {
+  font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+  font-size: 1.6rem;
+  color: #f5e9c8;
+  margin-bottom: 6px;
+  letter-spacing: 0.15em;
+}
+
+.author-meta {
+  font-size: 0.85rem;
+  color: #9bc4d8;
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+}
+
+.author-preview {
+  font-size: 0.9rem;
+  color: #b8ad94;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.author-card .card-arrow {
+  color: #6e6552;
+}
+
+.author-card:hover .card-arrow {
+  color: #f5e9c8;
+  transform: translateX(2px);
+}
+
+/* ========== 创作背景展开 ========== */
+.modal-background {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px dashed rgba(245, 233, 200, 0.15);
+}
+
+.bg-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(245, 233, 200, 0.05);
+  border: 1px solid rgba(245, 233, 200, 0.2);
+  border-radius: 4px;
+  color: #f5e9c8;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.bg-toggle:hover {
+  background: rgba(245, 233, 200, 0.1);
+  border-color: rgba(245, 233, 200, 0.4);
+}
+
+.bg-icon {
+  font-size: 1.1rem;
+}
+
+.bg-arrow {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #a89c82;
+  transition: transform 0.3s;
+}
+
+.bg-toggle[aria-expanded="true"] .bg-arrow {
+  transform: rotate(180deg);
+}
+
+.bg-content {
+  margin-top: 16px;
+  padding: 18px 20px;
+  background: rgba(245, 233, 200, 0.04);
+  border-left: 3px solid #d4a86a;
+  border-radius: 0 4px 4px 0;
+  color: #d4caaa;
+  font-size: 0.98rem;
+  line-height: 1.9;
+  letter-spacing: 0.05em;
+  animation: bgFade 0.3s ease;
+}
+
+.bg-content[hidden] {
+  display: none;
+}
+
+@keyframes bgFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== 移动端适配 ========== */
+@media (max-width: 600px) {
+  .main-nav {
+    max-width: 100%;
+  }
+  .nav-btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+  .section-title {
+    font-size: 1.7rem;
+  }
+  .author-list {
+    grid-template-columns: 1fr;
+  }
+  .author-name {
+    font-size: 1.4rem;
+  }
+}
