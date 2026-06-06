@@ -501,47 +501,71 @@
       window.speechSynthesis.cancel();
     });
 
-    // 关闭弹窗（兼容 Android：使用 closest() 查找 data-close，兼容子元素点击）
+    // 关闭弹窗（直接绑定到关闭按钮：capture 阶段 + touchend 兜底，覆盖所有移动端）
+    bindModalCloseHandlers();
+
+    // 弹窗内作者名字点击（打开作者弹窗）—— 仍走 document 委托，简单可靠
     document.addEventListener('click', e => {
-      // 弹窗内作者名字点击
       const authorLink = e.target.closest('.author-link');
-      if (authorLink) {
-        e.stopPropagation();
-        const name = authorLink.dataset.author;
-        const author = (typeof AUTHORS !== 'undefined' && Array.isArray(AUTHORS))
-          ? AUTHORS.find(a => a.name === name)
-          : null;
-        if (author) openAuthorModal(author);
-        return;
-      }
-      const closeTarget = e.target.closest('[data-close]');
-      if (closeTarget) {
-        if (!$modal.hidden) closeModal();
-        if (!$authorModal.hidden) closeAuthorModal();
-      }
+      if (!authorLink) return;
+      // 不要拦截关闭按钮的子元素
+      if (authorLink.closest('.modal-close')) return;
+      e.stopPropagation();
+      const name = authorLink.dataset.author;
+      const author = (typeof AUTHORS !== 'undefined' && Array.isArray(AUTHORS))
+        ? AUTHORS.find(a => a.name === name)
+        : null;
+      if (author) openAuthorModal(author);
     });
 
-    // 关闭弹窗：pointerdown 兜底（部分 Android 浏览器 click 事件被吞）
-    document.addEventListener('pointerdown', e => {
-      const closeTarget = e.target.closest('[data-close]');
-      if (!closeTarget) return;
-      // 仅当 click 事件未触发关闭时才兜底（避免重复触发）
-      let clicked = false;
-      const onClick = () => { clicked = true; document.removeEventListener('click', onClick, true); };
-      document.addEventListener('click', onClick, { capture: true, once: true });
-      setTimeout(() => {
-        document.removeEventListener('click', onClick, true);
-        if (!clicked) {
-          if (!$modal.hidden) closeModal();
-          if (!$authorModal.hidden) closeAuthorModal();
-        }
-      }, 50);
-    });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         if (!$modal.hidden) closeModal();
         if (!$authorModal.hidden) closeAuthorModal();
       }
+    });
+  }
+
+  // 直接绑定关闭按钮事件 - 解决移动端 click 丢失 / 优先级问题
+  function bindModalCloseHandlers() {
+    // 所有关闭按钮（两个 modal 共用同一套处理）
+    document.querySelectorAll('.modal .modal-close').forEach(btn => {
+      if (btn._closeBound) return;
+      btn._closeBound = true;
+      const closeHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        // 立即停止朗诵
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+        }
+        // 判断关闭的是哪个 modal
+        const inPoemModal = btn.closest('#modal');
+        const inAuthorModal = btn.closest('#authorModal');
+        if (inPoemModal && !$modal.hidden) closeModal();
+        if (inAuthorModal && !$authorModal.hidden) closeAuthorModal();
+      };
+      // click 事件（capture 阶段，最高优先级，阻止朗诵按钮抢走事件）
+      btn.addEventListener('click', closeHandler, { capture: true });
+      // touchend 兜底（Android WebView 上 click 事件有时被吞）
+      btn.addEventListener('touchend', closeHandler, { capture: true, passive: false });
+    });
+
+    // 背景遮罩点击关闭
+    document.querySelectorAll('.modal-backdrop').forEach(bd => {
+      if (bd._closeBound) return;
+      bd._closeBound = true;
+      const handler = (e) => {
+        e.stopPropagation();
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+        }
+        if (!$modal.hidden) closeModal();
+        if (!$authorModal.hidden) closeAuthorModal();
+      };
+      bd.addEventListener('click', handler, { capture: true });
+      bd.addEventListener('touchend', handler, { capture: true, passive: false });
     });
   }
 
