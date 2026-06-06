@@ -1,6 +1,6 @@
 // ============================================
-// 诗词二百首 · 前端逻辑
-// 功能：合并唐诗 + 宋词、类型/作者/关键词筛选、详情弹窗
+// 中华诗词三百首 · 前端逻辑
+// 功能：合并五大类数据、类型/作者/关键词筛选、详情弹窗
 // ============================================
 
 (function () {
@@ -22,24 +22,50 @@
 
   // ---------- 状态 ----------
   let ALL = [];           // 合并后的全量数据
-  let currentType = 'all';// 当前类型: all / shi / ci
+  let currentType = 'all';// 当前类型: all / shi / ci / qu / qing / modern
+
+  // 类型显示名映射
+  const TYPE_LABELS = {
+    shi: '诗',
+    ci: '词',
+    qu: '曲',
+    qing: '清诗',
+    modern: '现代'
+  };
 
   // ---------- 初始化 ----------
   function init() {
-    // 合并两个数据源
-    const tang = (typeof POEMS !== 'undefined' && Array.isArray(POEMS)) ? POEMS : [];
-    const song = (typeof SONGS !== 'undefined' && Array.isArray(SONGS)) ? SONGS : [];
+    // 收集所有数据源
+    const sources = [
+      (typeof POEMS !== 'undefined' && Array.isArray(POEMS)) ? POEMS : [],
+      (typeof SONGS !== 'undefined' && Array.isArray(SONGS)) ? SONGS : [],
+      (typeof QU !== 'undefined' && Array.isArray(QU)) ? QU : [],
+      (typeof QING !== 'undefined' && Array.isArray(QING)) ? QING : [],
+      (typeof MODERN !== 'undefined' && Array.isArray(MODERN)) ? MODERN : [],
+    ];
 
-    if (tang.length === 0 && song.length === 0) {
-      $list.innerHTML = '<p style="color:#f88;padding:20px;">数据加载失败，请检查 poems.js / songs.js</p>';
+    const validSources = sources.filter(s => s.length > 0);
+
+    if (validSources.length === 0) {
+      $list.innerHTML = '<p style="color:#f88;padding:20px;">数据加载失败，请检查数据文件</p>';
       return;
     }
 
     // 兜底：若数据缺 type 字段，自动补
-    tang.forEach(p => { if (!p.type) p.type = 'shi'; });
-    song.forEach(p => { if (!p.type) p.type = 'ci'; });
+    validSources.forEach((arr, idx) => {
+      arr.forEach(p => {
+        if (!p.type) {
+          // 根据数据源索引推断类型
+          if (idx === 0) p.type = 'shi';
+          else if (idx === 1) p.type = 'ci';
+          else if (idx === 2) p.type = 'qu';
+          else if (idx === 3) p.type = 'qing';
+          else p.type = 'modern';
+        }
+      });
+    });
 
-    ALL = tang.concat(song);
+    ALL = validSources.flat();
     populateAuthorFilter();
     $total.textContent = ALL.length;
     render(ALL);
@@ -51,7 +77,7 @@
     const counts = {};
     ALL.forEach(p => { counts[p.author] = (counts[p.author] || 0) + 1; });
     const authors = Object.keys(counts).sort((a, b) => {
-      // 唐 → 宋 的常见顺序粗排
+      // 按朝代顺序粗排
       const order = [
         // 唐
         '李白','杜甫','王维','孟浩然','王昌龄','高适','岑参','李商隐','杜牧',
@@ -60,7 +86,15 @@
         // 宋
         '苏轼','李清照','辛弃疾','柳永','李煜','欧阳修','周邦彦','陆游','秦观',
         '范仲淹','王安石','姜夔','晏殊','晏几道','岳飞','贺铸','张先','王观',
-        '刘克庄','叶梦得','陈与义','刘辰翁','文天祥','史达祖'
+        '刘克庄','叶梦得','陈与义','刘辰翁','文天祥',
+        // 元
+        '马致远','关汉卿','白朴','张养浩','睢景臣','王实甫','张可久','徐再思',
+        '乔吉','郑光祖',
+        // 清
+        '纳兰性德','龚自珍','郑燮','袁枚','赵翼','查慎行','黄景仁','林则徐',
+        // 现代
+        '毛泽东','徐志摩','戴望舒','海子','舒婷','艾青','余光中','郑愁予',
+        '席慕容','顾城'
       ];
       const ia = order.indexOf(a), ib = order.indexOf(b);
       if (ia === -1 && ib === -1) return a.localeCompare(b, 'zh-CN');
@@ -86,7 +120,7 @@
       const matchKw = !kw ||
         p.title.toLowerCase().includes(kw) ||
         p.author.toLowerCase().includes(kw) ||
-        (p.cipai || '').toLowerCase().includes(kw);
+        (p.cipai || p.qupai || '').toLowerCase().includes(kw);
       return matchType && matchAuthor && matchKw;
     });
   }
@@ -111,18 +145,20 @@
 
       const previewLines = p.content.slice(0, 2).join('');
 
-      // 词牌名标签（仅 ci 显示）
-      const cipaiTag = p.type === 'ci' && p.cipai
+      // 词牌名/曲牌名标签（仅 ci/qu 显示）
+      const nameTag = p.type === 'ci' && p.cipai
         ? `<span class="cipai-tag">${escapeHtml(p.cipai)}</span>`
-        : '';
+        : p.type === 'qu' && p.qupai
+          ? `<span class="cipai-tag">${escapeHtml(p.qupai)}</span>`
+          : '';
 
       // 类型徽章
-      const typeBadge = `<span class="type-badge type-${p.type}">${p.type === 'ci' ? '词' : '诗'}</span>`;
+      const typeBadge = `<span class="type-badge type-${p.type}">${TYPE_LABELS[p.type] || p.type}</span>`;
 
       card.innerHTML = `
         <div class="card-header">
           ${typeBadge}
-          ${cipaiTag}
+          ${nameTag}
         </div>
         <h3 class="card-title">${escapeHtml(p.title)}</h3>
         <p class="card-author">— ${escapeHtml(p.author)} —</p>
@@ -143,9 +179,10 @@
     $modalTitle.textContent = poem.title;
     $modalAuthor.textContent = `— ${poem.author} —`;
 
-    // 词牌名（仅 ci）
-    if (poem.type === 'ci' && poem.cipai) {
-      $modalCipai.textContent = poem.cipai;
+    // 词牌名/曲牌名（仅 ci/qu）
+    const nameTag = poem.type === 'ci' ? poem.cipai : poem.type === 'qu' ? poem.qupai : null;
+    if (nameTag) {
+      $modalCipai.textContent = nameTag;
       $modalCipai.hidden = false;
     } else {
       $modalCipai.hidden = true;

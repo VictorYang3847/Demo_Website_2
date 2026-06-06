@@ -90,6 +90,7 @@ body {
   margin-bottom: 18px;
   border-bottom: 1px solid rgba(245, 233, 200, 0.08);
   padding-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .type-tab {
@@ -103,6 +104,7 @@ body {
   letter-spacing: 0.15em;
   cursor: pointer;
   transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .type-tab:hover {
@@ -241,7 +243,7 @@ body {
   opacity: 1;
 }
 
-/* 卡片头部（徽章 + 词牌名） */
+/* 卡片头部（徽章 + 词牌/曲牌名） */
 .card-header {
   display: flex;
   align-items: center;
@@ -270,6 +272,24 @@ body {
   background: rgba(140, 180, 200, 0.2);
   color: #9bc4d8;
   border: 1px solid rgba(140, 180, 200, 0.35);
+}
+
+.type-badge.type-qu {
+  background: rgba(180, 130, 180, 0.2);
+  color: #d4a0d4;
+  border: 1px solid rgba(180, 130, 180, 0.35);
+}
+
+.type-badge.type-qing {
+  background: rgba(130, 190, 140, 0.2);
+  color: #90c898;
+  border: 1px solid rgba(130, 190, 140, 0.35);
+}
+
+.type-badge.type-modern {
+  background: rgba(200, 170, 100, 0.2);
+  color: #d0b870;
+  border: 1px solid rgba(200, 170, 100, 0.35);
 }
 
 .cipai-tag {
@@ -460,8 +480,11 @@ body {
     padding: 24px 14px 60px;
   }
   .title {
-    font-size: 2.2rem;
+    font-size: 2rem;
     letter-spacing: 0.3em;
+  }
+  .subtitle {
+    font-size: 0.85rem;
   }
   .filters {
     padding: 18px;
@@ -470,8 +493,8 @@ body {
     gap: 6px;
   }
   .type-tab {
-    padding: 7px 16px;
-    font-size: 0.9rem;
+    padding: 6px 14px;
+    font-size: 0.85rem;
   }
   .author-filter {
     width: 100%;
