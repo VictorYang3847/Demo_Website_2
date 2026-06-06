@@ -501,7 +501,7 @@
       window.speechSynthesis.cancel();
     });
 
-    // 关闭弹窗
+    // 关闭弹窗（兼容 Android：使用 closest() 查找 data-close，兼容子元素点击）
     document.addEventListener('click', e => {
       // 弹窗内作者名字点击
       const authorLink = e.target.closest('.author-link');
@@ -514,10 +514,28 @@
         if (author) openAuthorModal(author);
         return;
       }
-      if (e.target.dataset && e.target.dataset.close !== undefined) {
+      const closeTarget = e.target.closest('[data-close]');
+      if (closeTarget) {
         if (!$modal.hidden) closeModal();
         if (!$authorModal.hidden) closeAuthorModal();
       }
+    });
+
+    // 关闭弹窗：pointerdown 兜底（部分 Android 浏览器 click 事件被吞）
+    document.addEventListener('pointerdown', e => {
+      const closeTarget = e.target.closest('[data-close]');
+      if (!closeTarget) return;
+      // 仅当 click 事件未触发关闭时才兜底（避免重复触发）
+      let clicked = false;
+      const onClick = () => { clicked = true; document.removeEventListener('click', onClick, true); };
+      document.addEventListener('click', onClick, { capture: true, once: true });
+      setTimeout(() => {
+        document.removeEventListener('click', onClick, true);
+        if (!clicked) {
+          if (!$modal.hidden) closeModal();
+          if (!$authorModal.hidden) closeAuthorModal();
+        }
+      }, 50);
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
@@ -528,23 +546,58 @@
   }
 
   // ---------- 工具 ----------
-  // 语音朗诵
+  // 语音朗诵（兼容移动端：等 voices 异步加载完 + 兜底重试）
   function speakPoem(poemId) {
     const poem = ALL.find(p => p.id === poemId);
     if (!poem) return;
+
+    if (!('speechSynthesis' in window)) {
+      alert('当前浏览器不支持语音合成功能。');
+      return;
+    }
+
     // 停止当前正在播放的语音
     window.speechSynthesis.cancel();
     const text = poem.title + '，' + poem.author + '。' + poem.content.join('');
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = 0.85;  // 稍慢，更适合诗词朗诵
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    // 尝试选择中文语音
-    const voices = window.speechSynthesis.getVoices();
-    const zhVoice = voices.find(v => v.lang.startsWith('zh'));
-    if (zhVoice) utterance.voice = zhVoice;
-    window.speechSynthesis.speak(utterance);
+
+    const speakNow = () => {
+      const voices = window.speechSynthesis.getVoices() || [];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.85;  // 稍慢，更适合诗词朗诵
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      // 优先选中文语音
+      const zhVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+      if (zhVoice) {
+        utterance.voice = zhVoice;
+      } else {
+        console.warn('未检测到中文语音包，将使用默认语音。请到手机【设置 → 辅助功能/语言和输入法 → 语音输出】安装中文语音。');
+      }
+      window.speechSynthesis.speak(utterance);
+    };
+
+    // 移动端浏览器 voices 是异步加载的，必须等 voiceschanged
+    let voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      speakNow();
+    } else {
+      let handled = false;
+      const onVoicesReady = () => {
+        if (handled) return;
+        handled = true;
+        window.speechSynthesis.removeEventListener('voiceschanged', onVoicesReady);
+        speakNow();
+      };
+      window.speechSynthesis.addEventListener('voiceschanged', onVoicesReady);
+      // 兜底：1.2 秒后强制尝试（部分 Android 浏览器不触发 voiceschanged）
+      setTimeout(() => {
+        if (handled) return;
+        handled = true;
+        window.speechSynthesis.removeEventListener('voiceschanged', onVoicesReady);
+        speakNow();
+      }, 1200);
+    }
   }
 
   function getGradeClass(grade) {
